@@ -1,0 +1,63 @@
+<html>
+<body>
+
+<div id="divUi">
+
+	<h3>Image Sequencer</h3>
+
+	<p>
+		Specify a tiled image as a cel source
+		(some are provided in the Samples directory)
+		and an animation definition in text format
+		(click a Demo button for a sample),
+		then click the Run button to see the resulting animation.
+	</p>
+
+	<div>
+		<label>Upload Image File for Cel Source:</label>
+		<input type="file" onchange="UiEventHandler.inputFileCelSource_Changed(this);"></input>
+	</div>
+
+	<div>
+		<label>Image Uploaded:</label>
+		<br />
+		<div id="divImageUploaded">[none]</div>
+	</div>
+
+	<div>
+		<label>Animation Definition:</label>
+
+		<label>Demos:</label>
+		<select onchange="UiEventHandler.selectDemo_Changed(this);">
+			<option>-</option>
+			<option>Car</option>
+			<option>Face</option>
+		</select>
+
+		<br />
+
+		<textarea id="textareaAnimation" cols="40" rows="20"></textarea>
+	</div>
+
+	<div>
+		<button onclick="UiEventHandler.buttonRun_Clicked();">Run</button>
+	</div>
+
+	<div id="divAnimated"></div>
+
+</div>
+
+<script type="text/javascript" src="Animation.js"></script>
+<script type="text/javascript" src="AnimationDemos.js"></script>
+<script type="text/javascript" src="Cel.js"></script>
+<script type="text/javascript" src="CelIdWithDuration.js"></script>
+<script type="text/javascript" src="CelLayer.js"></script>
+<script type="text/javascript" src="Coords.js"></script>
+<script type="text/javascript" src="Rectangle.js"></script>
+<script type="text/javascript" src="Run.js"></script>
+<script type="text/javascript" src="Sequence.js"></script>
+<script type="text/javascript" src="TimingSpacing.js"></script>
+<script type="text/javascript" src="UiEventHandler.js"></script>
+
+</body>
+</html>
