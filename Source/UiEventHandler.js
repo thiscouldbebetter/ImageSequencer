@@ -1,26 +1,6 @@
 
 class UiEventHandler
 {
-	static selectDemo_Changed(selectDemo)
-	{
-		var d = document;
-		var textareaAnimation = d.getElementById("textareaAnimation");
-
-		var demoName = selectDemo.value;
-
-		var animation = AnimationDemos.byName(demoName);
-
-		var animationAsString = 
-		(
-			animation == null
-			? ""
-			: animation.toString()
-		);
-
-		textareaAnimation.value =
-			animationAsString;
-	}
-
 	static buttonRun_Clicked()
 	{
 		var d = document;
@@ -41,14 +21,23 @@ class UiEventHandler
 			return;
 		}
 
-		var divImageUploaded =
-			d.getElementById("divImageUploaded")
-		var canvasCelSource =
-			divImageUploaded.getElementsByTagName("canvas")[0];
-
-		if (canvasCelSource == null)
+		var celSourceId = animation.celSourceId;
+		var selectCelSource = d.getElementById("selectCelSource");
+		var options = selectCelSource.options;
+		var celSourceUploaded = null;
+		for (var i = 0; i < options.length; i++)
 		{
-			alert("No cel source uploaded!");
+			var option = options[i];
+			if (option.celSource.id == celSourceId)
+			{
+				celSourceUploaded = option.celSource;
+				break;
+			}
+		}
+
+		if (celSourceUploaded == null)
+		{
+			alert("Specified cel source not uploaded!");
 			return;
 		}
 
@@ -60,9 +49,39 @@ class UiEventHandler
 
 		var animationRun = new Run
 		(
-			animation, canvasCelSource, canvasAnimated
+			animation, celSourceUploaded.canvas, canvasAnimated
 		);
 		animationRun.start();
+	}
+
+	static checkboxCelSourceImageShow_Changed(checkboxCelSourceImageShow)
+	{
+		var d = document;
+
+		var shouldShowImage =
+			checkboxCelSourceImageShow.checked;
+
+		var divImageUploaded =
+			d.getElementById("divCelSourceImage");
+		divImageUploaded.innerHTML = "";
+
+		if (shouldShowImage)
+		{
+			var selectCelSource =
+				d.getElementById("selectCelSource");
+			var celSourceOptionSelected =
+				selectCelSource.selectedOptions[0];
+			var celSourceSelected =
+				celSourceOptionSelected.celSource;
+			var canvas = celSourceSelected.canvas;
+
+			divImageUploaded.appendChild(canvas);
+			divImageUploaded.style.display = "inline";
+		}
+		else
+		{
+			divImageUploaded.style.display = "none";
+		}
 	}
 
 	static inputFileCelSource_Changed(inputFile)
@@ -90,14 +109,48 @@ class UiEventHandler
 					var graphics = canvas.getContext("2d");
 					graphics.drawImage(imageAsImgElement, 0, 0);
 
-					var divImageUploaded =
-						d.getElementById("divImageUploaded");
-					divImageUploaded.innerHTML = "";
-					divImageUploaded.appendChild(canvas);
+					var celSource = new CelSource(file.name, canvas);
+					var selectCelSource =
+						d.getElementById("selectCelSource");
+					var celSourceAsOption = d.createElement("option");
+					celSourceAsOption.innerHTML = celSource.id;
+					celSourceAsOption.celSource = celSource;
+					selectCelSource.appendChild(celSourceAsOption);
 				}
 				imageAsImgElement.src = imageAsDataUrl;
 			};
 			fileReader.readAsDataURL(file);
 		}
+	}
+
+	static selectCelSource_Changed(selectCelSource)
+	{
+		var d = document;
+		var checkboxCelSourceImageShow =
+			d.getElementById("checkboxCelSourceImageShow");
+		this.checkboxCelSourceImageShow_Changed
+		(
+			checkboxCelSourceImageShow
+		);
+	}
+
+	static selectDemo_Changed(selectDemo)
+	{
+		var d = document;
+		var textareaAnimation = d.getElementById("textareaAnimation");
+
+		var demoName = selectDemo.value;
+
+		var animation = AnimationDemos.byName(demoName);
+
+		var animationAsString = 
+		(
+			animation == null
+			? ""
+			: animation.toString()
+		);
+
+		textareaAnimation.value =
+			animationAsString;
 	}
 }

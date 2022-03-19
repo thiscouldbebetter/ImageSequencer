@@ -25,28 +25,26 @@ class AnimationDemos
 	{
 		var celSize = new Coords(64, 48);
 
-		var cels = [];
 		var celCount = 8;
-		var celPosX = 0;
-		for (var f = 0; f < celCount; f++)
-		{
-			var cel = new Cel
-			(
-				"" + f,
-				[
-					new CelLayer
-					(
-						new Rectangle
-						(
-							celSize,
-							new Coords(celSize.x * f, 0)
-						)
-					)
-				]
-			);
+		var celPos = new Coords(0, 0);
 
+		var celGroupId = "Car";
+		var cels = [];
+		
+		for (var i = 0; i < celCount; i++)
+		{
+			var cel = Cel.fromIdSizeAndPos(0, celSize, celPos.clone());
 			cels.push(cel);
+
+			celPos.x += celSize.x;
 		}
+
+		var celGroup = new CelGroupVirtual
+		(
+			celGroupId, cels
+		);
+
+		var celGroups = [ celGroup ];
 
 		var sequences =
 		[
@@ -55,7 +53,7 @@ class AnimationDemos
 				"A",
 				"0,1,2,3,4,5,6,7".split(",").map
 				(
-					x => CelIdWithDuration.fromCelId(x)
+					x => CelIdWithDuration.fromGroupIdAndCelId(celGroupId, x)
 				)
 			),
 			new Sequence
@@ -63,7 +61,7 @@ class AnimationDemos
 				"B",
 				"7,6,5,4,3,2,1,0".split(",").map
 				(
-					x => CelIdWithDuration.fromCelId(x)
+					x => CelIdWithDuration.fromGroupIdAndCelId(celGroupId, x)
 				)
 			)
 		];
@@ -77,9 +75,9 @@ class AnimationDemos
 		(
 			"Car",
 			25, // framesPerSecond
-			"Car.png", // celSourceId,
 			celSize, // sizeInPixels
-			cels,
+			"Car.png", // celSourceId,
+			celGroups,
 			sequences,
 			timings
 		);
@@ -320,39 +318,41 @@ class AnimationDemos
 			)
 		];
 
+		var celGroups = cels.map(x => x.toGroup());
+
 		var sequences =
 		[
 			new Sequence
 			(
 				"Head_Still",
 				[
-					CelIdWithDuration.fromCelId("Head_Facing_Right")
+					CelIdWithDuration.fromGroupId("Head_Facing_Right")
 				]
 			),
 			new Sequence
 			(
 				"Eyebrows_Shifting",
 				[
-					new CelIdWithDuration("Eyebrows_Facing_Right", 48),
-					new CelIdWithDuration("Eyebrows_Facing_Right_Raised", 24),
-					new CelIdWithDuration("Eyebrows_Facing_Right", 24),
-					new CelIdWithDuration("Eyebrows_Facing_Right_Lowered", 24)
+					new CelIdWithDuration("Eyebrows_Facing_Right", 0, 48),
+					new CelIdWithDuration("Eyebrows_Facing_Right_Raised", 0, 24),
+					new CelIdWithDuration("Eyebrows_Facing_Right", 0, 24),
+					new CelIdWithDuration("Eyebrows_Facing_Right_Lowered", 0, 24)
 				]
 			),
 			new Sequence
 			(
 				"Eyes_Blinking",
 				[
-					new CelIdWithDuration("Eyes_Facing_Right_Open", 68),
-					new CelIdWithDuration("Eyes_Facing_Right_Closed", 4)
+					new CelIdWithDuration("Eyes_Facing_Right_Open", 0, 68),
+					new CelIdWithDuration("Eyes_Facing_Right_Closed", 0, 4)
 				]
 			),
 			new Sequence
 			(
 				"Mouth_Talking",
 				[
-					new CelIdWithDuration("Mouth_Facing_Right_Closed", 3),
-					new CelIdWithDuration("Mouth_Facing_Right_Open", 3),
+					new CelIdWithDuration("Mouth_Facing_Right_Closed", 0, 3),
+					new CelIdWithDuration("Mouth_Facing_Right_Open", 0, 3),
 				]
 			)
 		];
@@ -381,9 +381,9 @@ class AnimationDemos
 		(
 			"Face",
 			25, // framesPerSecond
-			"FaceParts.png", // celSourceId,
 			new Coords(64, 64), // sizeInPixels
-			cels,
+			"FaceParts.png", // celSourceId,
+			celGroups,
 			sequences,
 			timings
 		);

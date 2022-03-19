@@ -21,7 +21,12 @@ class Cel
 			}
 		)
 
-		return new Cel(celIdsCombined, layersCombined);
+		var returnCel = new Cel
+		(
+			celIdsCombined, layersCombined
+		);
+
+		return returnCel;
 	}
 
 	static fromIdSizeAndPos(id, size, pos)
@@ -33,13 +38,33 @@ class Cel
 		);
 	}
 
+	bounds()
+	{
+		return this.layers[0].boundsWithinSourceImage;
+	}
+
+	offsetToDrawAt()
+	{
+		return this.layers[0].offsetToDrawAt;
+	}
+
+	sourcePos()
+	{
+		return this.layers[0].sourcePos();
+	}
+
+	toGroup()
+	{
+		return CelGroup.fromCel(this);
+	}
+
 	// String.
 
 	static fromString(celAsString)
 	{
-		var parts = celAsString.split(":");
-		var celId = parts[0];
-		var layersAsString = parts[1];
+		var celId = null;
+
+		var layersAsString = celAsString;
 		var layersAsStrings = layersAsString.split("+");
 		var layers = layersAsStrings.map
 		(
@@ -49,11 +74,47 @@ class Cel
 		return new Cel(celId, layers);
 	}
 
+	static manyFromString(celsAsString)
+	{
+		var returnValues = celsAsString.split
+		(
+			"\n\t+"
+		).join(" +").split("\n").slice(1).map
+		(
+			x => Cel.fromString(x)
+		);
+
+		return returnValues;
+	}
+
+	static manyToString(cels)
+	{
+		var celsAsStrings = [];
+		var celPrev = null;
+
+		for (var i = 0; i < cels.length; i++)
+		{
+			var cel = cels[i];
+
+			var celAsString =
+				cel.id + ": "
+				+ cel.layers.map(x => x.toString()).join(" + ");
+
+			celsAsStrings.push(celAsString);
+
+			celPrev = cel;
+		}
+
+		var returnValue =
+			celsAsStrings.join("\n").split(" + ").join("\n    + ")
+
+		return returnValue;
+	}
+
 	toString()
 	{
 		var returnValue =
-			this.id + ": "
-			+ this.layers.map(x => x.toString()).join(" + ");
+			this.layers.map(x => x.toString()).join("\n    + ");
 
 		return returnValue;
 	}

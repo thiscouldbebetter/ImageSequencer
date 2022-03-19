@@ -7,8 +7,9 @@ class Sequence
 		this.celIdsWithDurations = celIdsWithDurations;
 	}
 
-	celIdAtFrame(frameIndex)
+	groupIdAndCelIdAtFrame(frameIndex)
 	{
+		var groupIdToReturn;
 		var celIdToReturn;
 
 		var framesSoFar = 0;
@@ -16,6 +17,7 @@ class Sequence
 		{
 			var celIdWithDuration = this.celIdsWithDurations[i];
 
+			groupIdToReturn = celIdWithDuration.groupId;
 			celIdToReturn = celIdWithDuration.celId;
 
 			framesSoFar += celIdWithDuration.durationInFrames;
@@ -26,7 +28,7 @@ class Sequence
 			}
 		}
 
-		return celIdToReturn;
+		return [ groupIdToReturn, celIdToReturn];
 	}
 
 	durationInFrames()
@@ -47,15 +49,15 @@ class Sequence
 
 	static fromString(sequenceAsString)
 	{
-		var parts = sequenceAsString.split(":").map(x => x.trim());
-		var id = parts[0];
-		var celIdsWithDurationsAsStrings =
-			parts[1].split(',').map(x => x.trim());
-		var celIdsWithDurations =
-			celIdsWithDurationsAsStrings.map
-			(
-				x => CelIdWithDuration.fromString(x)
-			);
+		var parts = sequenceAsString.split("\n").map(x => x.trim());
+		var id = parts[0].split(":").join("");
+
+		var celIdsWithDurationsAsStrings = parts.slice(1);
+
+		var celIdsWithDurations = celIdsWithDurationsAsStrings.map
+		(
+			x => CelIdWithDuration.fromString(x)
+		);
 
 		var returnSequence = new Sequence
 		(
@@ -67,12 +69,14 @@ class Sequence
 
 	toString()
 	{
+		var cellIdsWithDurationsAsStrings =
+			this.celIdsWithDurations.map(x => x.toString());
+
+		var cellIdsWithDurationsAsString =
+			cellIdsWithDurationsAsStrings.join("\n\t");
+
 		var returnValue =
-			this.id + ": "
-			+ this.celIdsWithDurations.map
-			(
-				x => x.toString()
-			).join(", ");
+			this.id + ":\n\t" + cellIdsWithDurationsAsString;
 
 		return returnValue;
 	}

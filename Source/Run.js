@@ -49,9 +49,12 @@ class Run
 				framesIntoSequenceSoFar =
 					framesIntoSequenceSoFar % sequence.durationInFrames();
 			}
-			var celId =
-				sequence.celIdAtFrame(framesIntoSequenceSoFar);
-			var cel = animation.celById(celId);
+			var groupIdAndCelId =
+				sequence.groupIdAndCelIdAtFrame(framesIntoSequenceSoFar);
+			var groupId = groupIdAndCelId[0];
+			var celId = groupIdAndCelId[1];
+			var celGroup = animation.celGroupById(groupId);
+			var cel = celGroup.celById(celId);
 			celsToCombine.push(cel);
 		}
 
@@ -100,28 +103,31 @@ class Run
 		var frameCurrent = this.frameCurrentAsCel();
 		var layers = frameCurrent.layers;
 
-		var zeroes = Coords.Instances().Zeroes;
-
 		for (var i = 0; i < layers.length; i++)
 		{
 			var layer = layers[i];
 
-			var layerBounds = layer.boundsWithinSourceImage;
-			var layerPos = layerBounds.pos;
-			var layerSize = layerBounds.size;
-			var layerOffsetToDrawAt =
-				layer.offsetToDrawAt || zeroes;
-
-			this.graphicsToRenderTo.drawImage
-			(
-				this.canvasCelSource,
-				layerPos.x, layerPos.y, // sourceOffset
-				layerSize.x, layerSize.y, // sourceSize
-				layerOffsetToDrawAt.x, layerOffsetToDrawAt.y, // destinationOffset
-				layerSize.x, layerSize.y // destinationSize
-			);
+			this.timer_Ticked_DrawLayer(layer);
 		}
 
 		this.frameAdvance();
+	}
+
+	timer_Ticked_DrawLayer(layer)
+	{
+		var layerBounds = layer.boundsWithinSourceImage;
+		var layerPos = layerBounds.pos;
+		var layerSize = layerBounds.size;
+		var layerOffsetToDrawAt =
+			layer.offsetToDrawAt || Coords.Instances().Zeroes;
+
+		this.graphicsToRenderTo.drawImage
+		(
+			this.canvasCelSource,
+			layerPos.x, layerPos.y, // sourceOffset
+			layerSize.x, layerSize.y, // sourceSize
+			layerOffsetToDrawAt.x, layerOffsetToDrawAt.y, // destinationOffset
+			layerSize.x, layerSize.y // destinationSize
+		);
 	}
 }

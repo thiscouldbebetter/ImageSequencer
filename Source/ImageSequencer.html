@@ -7,7 +7,7 @@
 
 	<p>
 		Specify a tiled image as a cel source
-		(some are provided in the Samples directory)
+		(some are provided in the <a href="../Samples/index.html">Samples</a> directory)
 		and an animation definition in text format
 		(click a Demo button for a sample),
 		then click the Run button to see the resulting animation.
@@ -19,9 +19,19 @@
 	</div>
 
 	<div>
-		<label>Image Uploaded:</label>
+		<label>Cel Source Images Uploaded:</label>
+		<select
+			id="selectCelSource"
+			onchange="UiEventHandler.selectCelSource_Changed(this);"
+		></select>
+		<label>Show Selected:</label>
+		<input
+			id ="checkboxCelSourceImageShow"
+			type="checkbox"
+			onchange="UiEventHandler.checkboxCelSourceImageShow_Changed(this);"
+		/>
 		<br />
-		<div id="divImageUploaded">[none]</div>
+		<div id="divCelSourceImage" style="display:none"></div>
 	</div>
 
 	<div>
@@ -36,7 +46,7 @@
 
 		<br />
 
-		<textarea id="textareaAnimation" cols="40" rows="20"></textarea>
+		<textarea id="textareaAnimation" cols="50" rows="20"></textarea>
 	</div>
 
 	<div>
@@ -50,8 +60,10 @@
 <script type="text/javascript" src="Animation.js"></script>
 <script type="text/javascript" src="AnimationDemos.js"></script>
 <script type="text/javascript" src="Cel.js"></script>
+<script type="text/javascript" src="CelGroup.js"></script>
 <script type="text/javascript" src="CelIdWithDuration.js"></script>
 <script type="text/javascript" src="CelLayer.js"></script>
+<script type="text/javascript" src="CelSource.js"></script>
 <script type="text/javascript" src="Coords.js"></script>
 <script type="text/javascript" src="Rectangle.js"></script>
 <script type="text/javascript" src="Run.js"></script>

@@ -5,9 +5,9 @@ class Animation
 	(
 		name,
 		framesPerSecond,
-		celSourceId,
 		sizeInPixels,
-		cels,
+		celSourceId,
+		celGroups,
 		sequences,
 		timings
 	)
@@ -16,7 +16,7 @@ class Animation
 		this.framesPerSecond = framesPerSecond;
 		this.celSourceId = celSourceId;
 		this.sizeInPixels = sizeInPixels;
-		this.cels = cels;
+		this.celGroups = celGroups;
 		this.sequences = sequences;
 		this.timings = timings;
 	}
@@ -29,7 +29,7 @@ class Animation
 			25, // framesPerSecond
 			"[unspecified]", // celSourceId,
 			new Coords(64, 64), // sizeInPixels
-			[], // cels
+			[], // celGroups
 			[], // sequences
 			[] // timings
 		);
@@ -37,15 +37,28 @@ class Animation
 		return returnValue;
 	}
 
-	celById(celId)
+	celGroupById(groupId)
 	{
-		if (this._celsById == null)
+		if (this._celGroupsById == null)
 		{
-			this._celsById =
-				new Map(this.cels.map(x => [x.id, x]) );
+			this._celGroupsById =
+				new Map(this.celGroups.map(x => [x.id, x]) );
 		}
 
-		return this._celsById.get(celId);
+		return this._celGroupsById.get(groupId);
+	}
+
+	cels()
+	{
+		if (this._cels == null)
+		{
+			this._cels = [];
+			this.celGroups.forEach
+			(
+				x => this._cels.push(...x.cels() )
+			)
+		}
+		return this._cels;
 	}
 
 	sequenceById(sequenceId)
@@ -64,34 +77,49 @@ class Animation
 	static fromString(groupAsString)
 	{
 		var parts = groupAsString.split("\n\n");
-		return new Animation
+
+		var name = parts[0].split("Name: ")[1];
+
+		var framesPerSecond =
+			parseFloat(parts[1].split("FramesPerSecond: ")[1]);
+
+		var size = Coords.fromString
 		(
-			parts[0].split("Name: ")[1],
-
-			parseFloat(parts[1].split("FramesPerSecond: ")[1]),
-
-			parts[2].split("CelSource: ")[1],
-
-			Coords.fromString
-			(
-				parts[3].split("Size:")[1]
-			),
-
-			parts[4].split("\n    +").join(" +").split("\n").slice(1).map
-			(
-				x => Cel.fromString(x)
-			),
-
-			parts[5].split("\n").slice(1).map
-			(
-				x => Sequence.fromString(x)
-			),
-
-			parts[6].split("\n").slice(1).map
-			(
-				x => TimingSpacing.fromString(x)
-			)
+			parts[2].split("Size: ")[1]
 		);
+
+		var celSource = parts[3].split("CelSource: ")[1];
+
+		var celGroups = CelGroup.manyFromString(parts[4]);
+
+		var sequencesAsStrings =
+			parts[5].split("\n\t").join(", ").split("\n").slice(1).map
+			(
+				x => x.split(", ").join("\n\t")
+			);
+
+		var sequences = sequencesAsStrings.map
+		(
+			x => Sequence.fromString(x)
+		);
+
+		var timingSpacings = parts[6].split("\n").slice(1).map
+		(
+			x => TimingSpacing.fromString(x)
+		);
+
+		var returnAnimation = new Animation
+		(
+			name,
+			framesPerSecond,
+			size,
+			celSource,
+			celGroups,
+			sequences,
+			timingSpacings
+		);
+
+		return returnAnimation;
 	}
 
 	toString()
@@ -100,9 +128,9 @@ class Animation
 		[
 			"Name: " + this.name, 
 			"FramesPerSecond: " + this.framesPerSecond,
-			"CelSource: " + this.celSourceId,
 			"Size: " + this.sizeInPixels.toString(),
-			"Cels:\n" + this.cels.map(x => x.toString()).join("\n").split(" + ").join("\n    + "),
+			"CelSource: " + this.celSourceId,
+			"Cels:\n" + CelGroup.manyToString(this.celGroups),
 			"Sequences:\n" + this.sequences.map(x => x.toString()).join("\n"),
 			"Timings:\n" + this.timings.map(x => x.toString()).join("\n")
 		].join("\n\n");

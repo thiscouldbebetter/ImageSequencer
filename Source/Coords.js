@@ -16,9 +16,40 @@ class Coords
 		return Coords._instances;
 	}
 
+	add(other)
+	{
+		this.x += other.x;
+		this.y += other.y;
+		return this;
+	}
+
+	clone()
+	{
+		return new Coords(this.x, this.y);
+	}
+
+	equals(other)
+	{
+		return (this.x == other.x && this.y == other.y);
+	}
+
 	magnitude()
 	{
 		return Math.sqrt(this.x + this.x, this.y * this.y);
+	}
+
+	multiply(other)
+	{
+		this.x *= other.x;
+		this.y *= other.y;
+		return this;
+	}
+
+	overwriteWith(other)
+	{
+		this.x = other.x;
+		this.y = other.y;
+		return this;
 	}
 
 	// String.
@@ -42,6 +73,7 @@ class Coords_Instances
 {
 	constructor()
 	{
+		this.Ones = new Coords(1, 1);
 		this.Zeroes = new Coords(0, 0);
 	}
 }

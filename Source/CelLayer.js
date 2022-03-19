@@ -20,6 +20,25 @@ class CelLayer
 		return CelLayer.fromBounds(new Rectangle(size, pos) );
 	}
 
+	max()
+	{
+		if (this._max == null)
+		{
+			this._max = this.size().clone().add(this.offsetToDrawAt);
+		}
+		return this._max;
+	}
+
+	size()
+	{
+		return this.boundsWithinSourceImage.size;
+	}
+
+	sourcePos()
+	{
+		return this.boundsWithinSourceImage.pos;
+	}
+
 	// String.
 
 	static fromString(layerAsString)
